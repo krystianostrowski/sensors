@@ -3,6 +3,7 @@ import * as io from 'socket.io-client';
 import { CreateSensorDto } from '../src/sesnors/dto/create-sensor.dto';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
+import axios from 'axios';
 
 describe('SensorsGateway (e2e)', () => {
   let app: INestApplication;
@@ -39,6 +40,7 @@ describe('SensorsGateway (e2e)', () => {
       socket.disconnect();
     }
 
+    await axios.delete('http://127.0.0.1:3000/sensors/TestSensor');
     await app.close();
   });
 
@@ -47,7 +49,7 @@ describe('SensorsGateway (e2e)', () => {
       temperature: 23,
       humidity: 45,
       timestamp: new Date(),
-      name: 'TestSensor'
+      name: 'TestSensor',
     };
 
     socket.emit('sensorData', testData);
@@ -56,13 +58,14 @@ describe('SensorsGateway (e2e)', () => {
       expect(data.temperature).toBe(testData.temperature);
       expect(data.humidity).toBe(testData.humidity);
 
-      // Verify data in the database
-      // const response = await request(server).get('/sensors');
-      // const sensors = response.body;
+      const response = await axios.get(
+        'http://127.0.0.1:3000/sensors/TestSensor',
+      );
+      const sensors = response.data;
 
-      // expect(sensors).toHaveLength(1);
-      // expect(sensors[0].temperature).toBe(testData.temperature);
-      // expect(sensors[0].humidity).toBe(testData.humidity);
+      expect(sensors).toHaveLength(1);
+      expect(sensors[0].temperature).toBe(testData.temperature);
+      expect(sensors[0].humidity).toBe(testData.humidity);
       done();
     });
 
@@ -70,4 +73,3 @@ describe('SensorsGateway (e2e)', () => {
       done.fail(`Received error: ${error}`);
     });
   });
-});

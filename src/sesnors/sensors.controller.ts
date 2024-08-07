@@ -1,8 +1,8 @@
 import { SensorsService } from "./sensors.service";
-import { Body, Delete, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { CreateSensorDto } from "./dto/create-sensor.dto";
 
-
+@Controller('sensors')
 export class SensorsController {
   constructor (private readonly sensorsService: SensorsService) {}
 
