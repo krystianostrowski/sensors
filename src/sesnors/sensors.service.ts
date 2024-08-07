@@ -22,4 +22,8 @@ export class SensorsService {
   async findByName(sensorName: string): Promise<Sensor[]> {
     return this.sensorModel.find({ name: sensorName }).exec();
   }
+
+  async removeAll(name: string): Promise<any> {
+    return this.sensorModel.deleteMany({ name }).exec();
+  }
 }
