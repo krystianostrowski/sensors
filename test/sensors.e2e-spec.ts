@@ -47,6 +47,7 @@ describe('SensorsGateway (e2e)', () => {
       temperature: 23,
       humidity: 45,
       timestamp: new Date(),
+      name: 'TestSensor'
     };
 
     socket.emit('sensorData', testData);

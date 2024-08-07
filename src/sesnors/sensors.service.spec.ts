@@ -9,6 +9,7 @@ const mockSensor = (temperature = 0, humidity = 0): Partial<Sensor> => ({
   temperature,
   humidity,
   timestamp: new Date(),
+  name: 'TestSensor'
 });
 
 const sensor = mockSensor(21, 55)
@@ -46,7 +47,7 @@ describe('SensorsService', () => {
   });
 
   it('should create new sensor reading', async () => {
-    const createSensorDto: CreateSensorDto = { temperature: 21, humidity: 55, timestamp: new Date() };
+    const createSensorDto: CreateSensorDto = { temperature: 21, humidity: 55, timestamp: new Date(), name: 'TestSensor' };
     const sensor = await service.create(createSensorDto);
 
     expect(sensor).toEqual(mockSensor(21, 55));

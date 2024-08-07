@@ -34,8 +34,8 @@ export class SensorGateway
 
   @SubscribeMessage('sensorData')
   async handleSensorData(@MessageBody() data: CreateSensorDto) {
-    const { temperature, humidity } = data;
-    if (typeof temperature === 'number' && typeof humidity === 'number') {
+    const { temperature, humidity, name } = data;
+    if (typeof temperature === 'number' && typeof humidity === 'number' && typeof name === 'string') {
       await this.sensorsService.create(data);
       this.server.emit('sensorDataSaved', data);
     } else {
