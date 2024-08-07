@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { SensorsService } from '../sensors.service';
 import { CreateSensorDto } from '../dto/create-sensor.dto';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: '/sensors', cors: true })
 export class SensorGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
