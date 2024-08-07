@@ -2,7 +2,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Sensor } from './interfaces/sensor.interface';
 import { CreateSensorDto } from './dto/create-sensor.dto';
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class SensorsService {
   constructor(
     @InjectModel('Sensor') private readonly sensorModel: Model<Sensor>,
