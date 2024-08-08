@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: mongodb
+    ports:
+      - "27017:27107"
+    volumes:
+      - data:/data/db
+
+  app:
+    build: .
+    container_name: sensors
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URL: mongodb://mongo:27017/sensors
+    depends_on:
+      - mongo
+
+volumes:
+  data:
+    driver: local
