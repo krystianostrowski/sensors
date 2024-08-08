@@ -20,6 +20,9 @@ class SensorModel {
   static find = jest.fn().mockReturnValue({
     exec: jest.fn().mockResolvedValue([sensor])
   });
+  static deleteMany = jest.fn().mockReturnValue({
+    exec: jest.fn().mockResolvedValue(true)
+  })
 }
 
 describe('SensorsService', () => {
@@ -57,4 +60,14 @@ describe('SensorsService', () => {
     const sensors = await service.findAll();
     expect(sensors).toEqual([sensor]);
   });
+
+  it('should find sensor by name', async () => {
+    const foundSensor = await service.findByName('TestSensor');
+    expect(foundSensor).toEqual([sensor])
+  })
+
+  it('should delete sensor', async () => {
+    const response = await service.removeAll('TestSensor');
+    expect(response).toEqual(true)
+  })
 });

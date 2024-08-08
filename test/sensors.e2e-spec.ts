@@ -9,6 +9,13 @@ describe('SensorsGateway (e2e)', () => {
   let app: INestApplication;
   let socket: io.Socket;
 
+  const testData: CreateSensorDto = {
+    temperature: 23,
+    humidity: 45,
+    timestamp: new Date(),
+    name: 'TestSensor',
+  };
+
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
@@ -44,14 +51,34 @@ describe('SensorsGateway (e2e)', () => {
     await app.close();
   });
 
-  it('should receive and store sensor data via WebSocket', (done) => {
-    const testData: CreateSensorDto = {
-      temperature: 23,
-      humidity: 45,
-      timestamp: new Date(),
-      name: 'TestSensor',
-    };
+  afterEach(() => {
+    socket.off('error');
+  })
 
+  it('should add sensor using HTTP request', async () => {
+    const response = await axios.post('http://127.0.0.1:3000/sensors', testData)
+    console.log(response)
+  })
+
+  it('should get all sensors using HTTP request', async () => {
+    const response = await axios.get('http://127.0.0.1:3000/sensors')
+    expect(response.data).toHaveLength(1)
+  })
+
+  it('should get sensors by name using HTTP request', async () => {
+    const response = await axios.get('http://127.0.0.1:3000/sensors/TestSensor')
+    expect(response.data).toHaveLength(1)
+  })
+
+  it('should delete sensor using HTTP request', async () => {
+    const response = await axios.delete('http://127.0.0.1:3000/sensors/TestSensor')
+    expect(response.data).toEqual({ acknowledged: true, deletedCount: 1 })
+
+    const afterDelete = await axios.get('http://127.0.0.1:3000/sensors/TestSensor')
+    expect(afterDelete.data).toHaveLength(0)
+  })
+
+  it('should receive and store sensor data via WebSocket', (done) => {
     socket.emit('sensorData', testData);
 
     socket.on('sensorDataSaved', async (data: CreateSensorDto) => {
@@ -70,6 +97,22 @@ describe('SensorsGateway (e2e)', () => {
     });
 
     socket.on('error', (error) => {
-      done.fail(`Received error: ${error}`);
+      done(`Received error: ${error}`);
     });
   });
+
+  it('should handle invalid sensor data format', done => {
+    const invalidData = {
+      temperature: "temp",
+      humidity: 50,
+      name: "TestSensor"
+    }
+
+    socket.emit('sensorData', invalidData)
+
+    socket.on('error', (error) => {
+      expect(error).toBe("Invalid data format")
+      done();
+    })
+  })
+});
